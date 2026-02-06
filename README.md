@@ -1,5 +1,5 @@
 # Welcome! I'm Lucy 👋
-*My ronouns she/her*
+*My pronouns she/her*
 
 I'm:
 - 👯 An Engineer and Education Nerd
