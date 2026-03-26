@@ -1,12 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { useJobs } from '@/context/JobContext';
 import ScanButton from '@/components/ScanButton';
 import JobCard from '@/components/JobCard';
 import ApplicationTable from '@/components/ApplicationTable';
+import ManualJobEntry from '@/components/ManualJobEntry';
 
 export default function HomePage() {
   const { state } = useJobs();
+  const [showManualEntry, setShowManualEntry] = useState(false);
 
   const potentialJobs = state.jobs
     .filter(j => j.status === 'potential')
@@ -27,13 +30,27 @@ export default function HomePage() {
               {potentialJobs.length} potential {potentialJobs.length === 1 ? 'match' : 'matches'}
             </p>
           </div>
-          <ScanButton />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowManualEntry(!showManualEntry)}
+              className="px-4 py-2 text-xs tracking-wide border border-neutral-300 text-neutral-600 hover:bg-neutral-50 rounded transition-colors"
+            >
+              + Add Job
+            </button>
+            <ScanButton />
+          </div>
         </div>
 
-        {potentialJobs.length === 0 ? (
+        {showManualEntry && (
+          <div className="mb-4">
+            <ManualJobEntry onClose={() => setShowManualEntry(false)} />
+          </div>
+        )}
+
+        {potentialJobs.length === 0 && !showManualEntry ? (
           <div className="border border-dashed border-neutral-200 rounded-lg py-12 text-center">
             <p className="text-xs text-neutral-400 font-light">
-              No new opportunities. Click Scan Now to search your configured sites.
+              No new opportunities. Click Scan Now or Add Job to get started.
             </p>
           </div>
         ) : (
