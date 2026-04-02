@@ -18,6 +18,8 @@ interface JobContextType {
   state: AppState;
   // Job actions
   addJobs: (jobs: Job[]) => void;
+  updateJob: (id: string, updates: Partial<Job>) => void;
+  removeJob: (id: string) => void;
   acceptJob: (id: string) => void;
   rejectJob: (id: string) => void;
   updateApplicationStatus: (id: string, status: ApplicationStatus) => void;
@@ -61,9 +63,32 @@ export function JobProvider({ children }: { children: ReactNode }) {
   const addJobs = useCallback((jobs: Job[]) => {
     setState(prev => {
       if (!prev) return prev;
-      const existingUrls = new Set(prev.jobs.map(j => j.applicationUrl));
-      const newJobs = jobs.filter(j => !existingUrls.has(j.applicationUrl));
+      const existingIds = new Set(prev.jobs.map(j => j.id));
+      // Only deduplicate by URL if the URL is non-empty
+      const existingUrls = new Set(prev.jobs.map(j => j.applicationUrl).filter(Boolean));
+      const newJobs = jobs.filter(j => {
+        if (existingIds.has(j.id)) return false;
+        if (j.applicationUrl && existingUrls.has(j.applicationUrl)) return false;
+        return true;
+      });
       return { ...prev, jobs: [...prev.jobs, ...newJobs] };
+    });
+  }, []);
+
+  const updateJob = useCallback((id: string, updates: Partial<Job>) => {
+    setState(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        jobs: prev.jobs.map(j => j.id === id ? { ...j, ...updates } : j),
+      };
+    });
+  }, []);
+
+  const removeJob = useCallback((id: string) => {
+    setState(prev => {
+      if (!prev) return prev;
+      return { ...prev, jobs: prev.jobs.filter(j => j.id !== id) };
     });
   }, []);
 
@@ -205,6 +230,8 @@ export function JobProvider({ children }: { children: ReactNode }) {
   const value: JobContextType = {
     state,
     addJobs,
+    updateJob,
+    removeJob,
     acceptJob,
     rejectJob,
     updateApplicationStatus,

@@ -18,7 +18,7 @@ export default function Navigation() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
           <Link href="/" className="text-sm font-light tracking-widest uppercase text-neutral-900">
-            求職 <span className="text-neutral-400 ml-1">Job Search</span>
+            Job Search
           </Link>
           <div className="flex space-x-1">
             {navItems.map(item => (
